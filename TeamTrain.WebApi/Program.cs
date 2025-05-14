@@ -9,8 +9,23 @@ using TeamTrain.Infrastructure.Persistence.UnitOfWork;
 using TeamTrain.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Serilog.Sinks.Elasticsearch;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration["Serilog:WriteTo:1:Args:nodeUri"]))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = $"teamtrain-logs-{DateTime.UtcNow:yyyy-MM}"
+    })
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
