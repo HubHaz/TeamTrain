@@ -1,5 +1,5 @@
 ﻿using TeamTrain.Domain.Interfaces.UnitOfWork;
-using TeamTrain.Domain.Interfaces;
+using TeamTrain.Domain.Interfaces.Repositories;
 
 namespace TeamTrain.Infrastructure.Persistence.UnitOfWork;
 
@@ -14,4 +14,5 @@ public class UnitOfWork(ApplicationDbContext context,
     public IMembershipRepository Memberships { get; } = memberships;
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default) => context.SaveChangesAsync(cancellationToken);
+    public void Dispose() => context.Dispose();
 }

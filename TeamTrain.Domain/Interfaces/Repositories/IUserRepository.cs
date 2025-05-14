@@ -1,7 +1,7 @@
 ﻿using TeamTrain.Domain.Entities;
 using TeamTrain.Domain.Enums;
 
-namespace TeamTrain.Domain.Interfaces;
+namespace TeamTrain.Domain.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<User>
 {

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace TeamTrain.Domain.Interfaces;
+namespace TeamTrain.Domain.Interfaces.Repositories;
 
 public interface IRepository<T> where T : class, IEntity<Guid>
 {

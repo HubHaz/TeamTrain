@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTrain.Domain.Entities;
 using TeamTrain.Domain.Enums;
-using TeamTrain.Domain.Interfaces;
+using TeamTrain.Domain.Interfaces.Repositories;
 
 namespace TeamTrain.Infrastructure.Persistence.Repositories;
 

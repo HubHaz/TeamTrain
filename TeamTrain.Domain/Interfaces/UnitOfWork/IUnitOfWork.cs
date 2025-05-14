@@ -1,6 +1,8 @@
-﻿namespace TeamTrain.Domain.Interfaces.UnitOfWork;
+﻿using TeamTrain.Domain.Interfaces.Repositories;
 
-public interface IUnitOfWork
+namespace TeamTrain.Domain.Interfaces.UnitOfWork;
+
+public interface IUnitOfWork : IDisposable
 {
     ITrainingRepository Trainings { get; }
     IUserRepository Users { get; }
