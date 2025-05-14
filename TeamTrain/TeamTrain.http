@@ -1,6 +1,0 @@
-@TeamTrain_HostAddress = http://localhost:5180
-
-GET {{TeamTrain_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
