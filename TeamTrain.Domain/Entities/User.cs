@@ -16,4 +16,7 @@ public class User : IEntity<Guid>
     public string PasswordHash { get; set; }
 
     public RoleType Role { get; set; }
+
+    public ICollection<Membership> Memberships { get; set; }
+    public ICollection<UserTrainingSignup> Signups { get; set; }
 }
