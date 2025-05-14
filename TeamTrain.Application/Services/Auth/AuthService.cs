@@ -1,4 +1,5 @@
-﻿using TeamTrain.Application.DTOs.Auth;
+﻿using TeamTrain.Application.Common.Models;
+using TeamTrain.Application.DTOs.Auth;
 using TeamTrain.Application.Helpers;
 using TeamTrain.Application.Interfaces.Auth;
 using TeamTrain.Domain.Entities;
@@ -14,16 +15,10 @@ public class AuthService(
     IUnitOfWork unitOfWork,
     ITokenService tokenService) : IAuthService
 {
-    public async Task<AuthResult> RegisterAsync(RegisterDto registerDto)
+    public async Task<ServiceResponse<AuthResult>> RegisterAsync(RegisterDto registerDto)
     {
         if (await userRepository.EmailExistsAsync(registerDto.Email))
-        {
-            return new AuthResult
-            {
-                Success = false,
-                Errors = ["Email is already in use."]
-            };
-        }
+            return ServiceResponse<AuthResult>.ErrorResponse("Email is already in use.");
 
         var user = new User
         {
@@ -31,8 +26,8 @@ public class AuthService(
             Email = registerDto.Email,
             PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
             Role = RoleType.Participant,
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         await userRepository.AddAsync(user);
@@ -41,69 +36,54 @@ public class AuthService(
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken(user);
 
-        return new AuthResult
+        var authResult = new AuthResult
         {
-            Success = true,
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+
+        return ServiceResponse<AuthResult>.SuccessResponse(authResult, "User registered successfully.");
     }
 
-    public async Task<AuthResult> LoginAsync(LoginDto loginDto)
+    public async Task<ServiceResponse<AuthResult>> LoginAsync(LoginDto loginDto)
     {
         var user = await userRepository.GetByEmailAsync(loginDto.Email);
 
         if (user == null || !PasswordHasher.VerifyPasswordHash(loginDto.Password, user.PasswordHash))
-        {
-            return new AuthResult
-            {
-                Success = false,
-                Errors = ["Invalid credentials."]
-            };
-        }
+            return ServiceResponse<AuthResult>.ErrorResponse("Invalid credentials.");
 
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken(user);
 
-        return new AuthResult
+        var authResult = new AuthResult
         {
-            Success = true,
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+
+        return ServiceResponse<AuthResult>.SuccessResponse(authResult, "Login successful.");
     }
 
-    public async Task<AuthResult> RefreshTokenAsync(string refreshToken)
+    public async Task<ServiceResponse<AuthResult>> RefreshTokenAsync(string refreshToken)
     {
         var token = await refreshTokenRepository.GetByTokenAsync(refreshToken);
 
         if (token == null)
-        {
-            return new AuthResult
-            {
-                Success = false,
-                Errors = ["Invalid or expired refresh token."]
-            };
-        }
+            return ServiceResponse<AuthResult>.ErrorResponse("Invalid or expired refresh token.");
 
         var user = await userRepository.GetByIdAsync(token.UserId);
         if (user == null)
-        {
-            return new AuthResult
-            {
-                Success = false,
-                Errors = ["User not found."]
-            };
-        }
+            return ServiceResponse<AuthResult>.ErrorResponse("User not found.");
 
         var newAccessToken = tokenService.GenerateAccessToken(user);
         var newRefreshToken = tokenService.GenerateRefreshToken(user);
 
-        return new AuthResult
+        var authResult = new AuthResult
         {
-            Success = true,
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken
         };
+
+        return ServiceResponse<AuthResult>.SuccessResponse(authResult, "Token refreshed.");
     }
 }

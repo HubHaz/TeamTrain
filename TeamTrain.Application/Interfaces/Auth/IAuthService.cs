@@ -1,10 +1,11 @@
-﻿using TeamTrain.Application.DTOs.Auth;
+﻿using TeamTrain.Application.Common.Models;
+using TeamTrain.Application.DTOs.Auth;
 
 namespace TeamTrain.Application.Interfaces.Auth;
 
 public interface IAuthService
 {
-    Task<AuthResult> RegisterAsync(RegisterDto registerDto);
-    Task<AuthResult> LoginAsync(LoginDto loginDto);
-    Task<AuthResult> RefreshTokenAsync(string refreshToken);
+    Task<ServiceResponse<AuthResult>> RegisterAsync(RegisterDto registerDto);
+    Task<ServiceResponse<AuthResult>> LoginAsync(LoginDto loginDto);
+    Task<ServiceResponse<AuthResult>> RefreshTokenAsync(string refreshToken);
 }
