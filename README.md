@@ -20,6 +20,8 @@
 - **CQRS + MediatR**
 - **JWT authentication**
 - **FluentValidation**
+- **ElasticSearch + Kibana**
+- **Realtime notifications by SignalR & Redis**
 - **Docker-ready**
 - **Unit & Integration Tests**
 
@@ -39,8 +41,9 @@ TeamTrain/
 - **```cd TeamTrain```**
 
 ## Run migrations and start the app
-- **```dotnet ef database update```**
-- **```dotnet run --project WebApi```**
+- **```dotnet ef migrations add InitialCreate --project TeamTrain.Infrastructure --startup-project TeamTrain.WebApi```**
+- (optional) **```dotnet ef database update --project TeamTrain.Infrastructure --startup-project TeamTrain.WebApi```**
+- **```docker-compose up --build```**
 
 
 ## ✅ Roadmap
@@ -52,5 +55,5 @@ TeamTrain/
  - **Docker Compose setup**
 
 
-##📄 License
+## 📄 License
 This project is licensed under the MIT License.
