@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TeamTrain.Application\TeamTrain.Application.csproj" />
+    <ProjectReference Include="..\TeamTrain.Domain\TeamTrain.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
