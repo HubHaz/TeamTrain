@@ -6,15 +6,14 @@ public static class SignalrSetup
 {
     public static IServiceCollection RegisterSignalR(this IServiceCollection services, IConfiguration configuration)
     {
-        var redisConnection = configuration.GetConnectionString("RedisConnection");
+        var redisConnectionString = configuration.GetConnectionString("RedisConnection");
 
-        services.AddSignalR().AddStackExchangeRedis(redisConnection, options =>
+        services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
+
+        services.AddSignalR().AddStackExchangeRedis(redisConnectionString, options =>
         {
             options.Configuration.ChannelPrefix = "RealTimeNotificationSystem";
         });
-
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-            ConnectionMultiplexer.Connect(redisConnection));
 
         return services;
     }

@@ -1,4 +1,4 @@
-using TeamTrain.Application;
+﻿using TeamTrain.Application;
 using TeamTrain.Application.Settings;
 using TeamTrain.Domain.Interfaces.Repositories;
 using TeamTrain.Domain.Interfaces.UnitOfWork;
@@ -7,7 +7,6 @@ using TeamTrain.Infrastructure.Persistence.UnitOfWork;
 using TeamTrain.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Serilog.Sinks.Elasticsearch;
 using Serilog;
 using TeamTrain.WebApi.Configurations;
 using TeamTrain.Application.Hubs;
@@ -17,16 +16,8 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration["Serilog:WriteTo:1:Args:nodeUri"]))
-    {
-        AutoRegisterTemplate = true,
-        IndexFormat = $"teamtrain-logs-{DateTime.UtcNow:yyyy-MM}"
-    })
-    .CreateLogger();
+// Configure Serilog
+ConfigureLogging();
 
 builder.Host.UseSerilog();
 
@@ -105,10 +96,16 @@ builder.Services.AddCors(options =>
             policy
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
         });
 });
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(80);
+});
+
+Console.WriteLine("🚀 App is starting up...");
 
 var app = builder.Build();
 
@@ -134,3 +131,15 @@ app.MapControllers();
 app.MapHub<NotificationHub>("/notify");
 
 app.Run();
+
+
+static void ConfigureLogging()
+{
+    var configuration = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .Build();
+
+    Log.Logger = new LoggerConfiguration()
+        .ReadFrom.Configuration(configuration)
+        .CreateLogger();
+}

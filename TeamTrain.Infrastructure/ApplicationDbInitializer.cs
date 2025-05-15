@@ -25,7 +25,6 @@ public class ApplicationDbInitializer : IHostedService
         var strategy = context.Database.CreateExecutionStrategy();
         _logger.LogInformation("Running migrations for {Context}", nameof(ApplicationDbContext));
         await strategy.ExecuteAsync(async () => await context.Database.MigrateAsync(cancellationToken: cancellationToken));
-        await context.Database.MigrateAsync(cancellationToken: cancellationToken);
         _logger.LogInformation("Migrations applied successfully");
     }
 

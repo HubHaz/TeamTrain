@@ -4,8 +4,6 @@ using TeamTrain.Application.Common.Models;
 
 namespace TeamTrain.WebApi.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public abstract class BaseController : ControllerBase
 {
     protected Guid UserId => Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : Guid.Empty;

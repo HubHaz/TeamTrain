@@ -6,6 +6,8 @@ using TeamTrain.Application.DTOs.Auth;
 
 namespace TeamTrain.WebApi.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class AuthController(ISender sender) : BaseController
 {
     [HttpPost("register")]
