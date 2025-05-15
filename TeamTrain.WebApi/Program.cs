@@ -1,9 +1,7 @@
 using TeamTrain.Application;
-using Microsoft.EntityFrameworkCore;
 using TeamTrain.Application.Settings;
 using TeamTrain.Domain.Interfaces.Repositories;
 using TeamTrain.Domain.Interfaces.UnitOfWork;
-using TeamTrain.Infrastructure;
 using TeamTrain.Infrastructure.Persistence.Repositories;
 using TeamTrain.Infrastructure.Persistence.UnitOfWork;
 using TeamTrain.WebApi.Middleware;
@@ -11,6 +9,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Serilog.Sinks.Elasticsearch;
 using Serilog;
+using TeamTrain.WebApi.Configurations;
+using TeamTrain.Application.Hubs;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,21 +30,29 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var jwtSection = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSection);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://localhost:7264";
-        options.Audience = "TeamTrainUsers";
-        options.RequireHttpsMetadata = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidAudience = jwtSection["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Secret"])),
+            RoleClaimType = ClaimTypes.Role
+        };
     });
 
 builder.Services.AddAuthorizationBuilder();
 
+builder.Services.AddPersistenceSetup(builder.Configuration);
+builder.Services.RegisterSignalR(builder.Configuration);
 builder.Services.AddApplication();
 
 // Add services to the container.
@@ -55,6 +66,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.RegisterServices();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -84,6 +97,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -92,9 +118,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseRouting();
+
+app.UseCors();
+
+app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -102,5 +130,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notify");
 
 app.Run();
