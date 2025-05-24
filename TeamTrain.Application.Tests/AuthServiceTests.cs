@@ -2,8 +2,8 @@
 using Moq;
 using TeamTrain.Application.DTOs.Tenant.Auth;
 using TeamTrain.Application.Helpers;
-using TeamTrain.Application.Interfaces.Tenant.Auth;
-using TeamTrain.Application.Services.Tenant.Auth;
+using TeamTrain.Application.Interfaces.Tenants.Auth;
+using TeamTrain.Application.Services.Tenants.Auth;
 using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Interfaces.Repositories;
 using TeamTrain.Domain.Interfaces.UnitOfWork;

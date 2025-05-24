@@ -10,4 +10,9 @@ public class TenantProvider : ITenantProvider
     {
         _tenant = tenant;
     }
+
+    public string? GetConnectionString()
+    {
+        return _tenant?.ConnectionString;
+    }
 }

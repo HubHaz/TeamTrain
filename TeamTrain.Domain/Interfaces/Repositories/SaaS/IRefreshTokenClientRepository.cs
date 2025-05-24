@@ -4,8 +4,8 @@ namespace TeamTrain.Domain.Interfaces.Repositories.SaaS;
 
 public interface IRefreshTokenClientRepository
 {
-    Task<RefreshToken> GetByTokenAsync(string token);
-    Task AddAsync(RefreshToken refreshToken);
-    Task UpdateAsync(RefreshToken refreshToken);
+    Task<RefreshTokenClient> GetByTokenAsync(string token);
+    Task AddAsync(RefreshTokenClient refreshToken);
+    Task UpdateAsync(RefreshTokenClient refreshToken);
     Task DeleteAsync(Guid id);
 }

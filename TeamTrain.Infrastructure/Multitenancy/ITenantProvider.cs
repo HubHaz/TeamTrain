@@ -4,4 +4,5 @@ public interface ITenantProvider
 {
     TenantDto? CurrentTenant { get; }
     void SetTenant(TenantDto tenant);
+    string? GetConnectionString();
 }

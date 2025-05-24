@@ -1,0 +1,16 @@
+﻿using MediatR;
+using TeamTrain.Application.Common.Models;
+using TeamTrain.Application.CQRS.SaaS.Commands.Auth;
+using TeamTrain.Application.CQRS.Tenants.Commands.Auth;
+using TeamTrain.Application.DTOs.Tenants.Auth;
+using TeamTrain.Application.Interfaces.Tenants.Auth;
+
+namespace TeamTrain.Application.CQRS.Tenants.Handlers.Auth;
+
+public class RefreshTokenCommandHandler(IAuthService authService) : IRequestHandler<RefreshTokenCommand, ServiceResponse<AuthResult>>
+{
+    public async Task<ServiceResponse<AuthResult>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    {
+        return await authService.RefreshTokenAsync(request.RefreshToken);
+    }
+}

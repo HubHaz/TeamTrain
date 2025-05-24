@@ -5,15 +5,27 @@ using TeamTrain.Infrastructure.Multitenancy;
 
 namespace TeamTrain.Infrastructure.Contexts;
 
-public class TenantDbContext(DbContextOptions<TenantDbContext> options, 
-    ITenantProvider tenantProvider) : DbContext(options)
+public class TenantDbContext : DbContext
 {
+    private readonly string? _connectionString;
+
+    public TenantDbContext(DbContextOptions<TenantDbContext> options, ITenantProvider tenantProvider)
+        : base(options)
+    {
+        _connectionString = tenantProvider.CurrentTenant?.ConnectionString;
+    }
+
+    public TenantDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (tenantProvider.CurrentTenant == null)
-            throw new InvalidOperationException("No tenant available");
+        if (string.IsNullOrWhiteSpace(_connectionString))
+            throw new InvalidOperationException("No connection string provided for tenant");
 
-        optionsBuilder.UseNpgsql(tenantProvider.CurrentTenant.ConnectionString);
+        optionsBuilder.UseNpgsql(_connectionString);
     }
 
     public DbSet<User> Users { get; set; }

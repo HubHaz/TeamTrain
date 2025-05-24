@@ -6,7 +6,7 @@ using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.Infrastructure;
 
-public class TenantDbInitializer(
+public class MainDbInitializer(
     ILogger<MainDbContext> logger, 
     IServiceProvider serviceProvider) : IHostedService
 {

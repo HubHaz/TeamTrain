@@ -3,11 +3,12 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TeamTrain.Application.Common.Behaviours;
+using TeamTrain.Application.Interfaces.Multitenancy;
 using TeamTrain.Application.Interfaces.SaaS.Auth;
-using TeamTrain.Application.Interfaces.Tenant.Auth;
-using TeamTrain.Application.Services;
+using TeamTrain.Application.Interfaces.Tenants.Auth;
+using TeamTrain.Application.Services.Multitenancy;
 using TeamTrain.Application.Services.SaaS.Auth;
-using TeamTrain.Application.Services.Tenant.Auth;
+using TeamTrain.Application.Services.Tenants.Auth;
 using TeamTrain.Domain.Interfaces.Repositories;
 using TeamTrain.Domain.Interfaces.Repositories.SaaS;
 using TeamTrain.Domain.Interfaces.UnitOfWork;
@@ -26,6 +27,8 @@ public static class ApplicationDependencyInjection
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
 
         #region SaaS
 

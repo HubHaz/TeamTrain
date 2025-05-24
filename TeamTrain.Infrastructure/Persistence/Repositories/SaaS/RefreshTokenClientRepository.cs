@@ -7,18 +7,18 @@ namespace TeamTrain.Infrastructure.Persistence.Repositories.SaaS;
 
 public class RefreshTokenClientRepository(MainDbContext context) : IRefreshTokenClientRepository
 {
-    public async Task<RefreshToken> GetByTokenAsync(string token)
+    public async Task<RefreshTokenClient> GetByTokenAsync(string token)
     {
         return await context.RefreshTokens.FirstOrDefaultAsync(r => r.Token == token && !r.IsRevoked && !r.IsUsed);
     }
 
-    public async Task AddAsync(RefreshToken refreshToken)
+    public async Task AddAsync(RefreshTokenClient refreshToken)
     {
         await context.RefreshTokens.AddAsync(refreshToken);
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(RefreshToken refreshToken)
+    public async Task UpdateAsync(RefreshTokenClient refreshToken)
     {
         context.RefreshTokens.Update(refreshToken);
         await context.SaveChangesAsync();

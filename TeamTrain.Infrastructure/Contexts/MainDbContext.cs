@@ -8,5 +8,5 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 {
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<PortalUser> PortalUsers => Set<PortalUser>();
-    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<RefreshTokenClient> RefreshTokens => Set<RefreshTokenClient>();
 }
