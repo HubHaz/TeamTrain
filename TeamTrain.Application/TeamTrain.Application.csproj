@@ -23,8 +23,4 @@
     <ProjectReference Include="..\TeamTrain.Infrastructure\TeamTrain.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Common\" />
-  </ItemGroup>
-
 </Project>

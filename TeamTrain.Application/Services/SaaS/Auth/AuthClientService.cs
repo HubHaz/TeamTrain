@@ -1,6 +1,8 @@
 ﻿using TeamTrain.Application.Common.Models;
+using TeamTrain.Application.DTOs.Common;
 using TeamTrain.Application.DTOs.SaaS.Auth;
 using TeamTrain.Application.Helpers;
+using TeamTrain.Application.Interfaces;
 using TeamTrain.Application.Interfaces.SaaS.Auth;
 using TeamTrain.Domain.Entities.Portal;
 using TeamTrain.Domain.Enums;
@@ -11,12 +13,12 @@ namespace TeamTrain.Application.Services.SaaS.Auth;
 public class AuthClientService(
     IPortalUserRepository portalUserRepository,
     IRefreshTokenClientRepository refreshTokenRepository,
-    ITokenClientService tokenService) : IAuthClientService
+    ITokenService tokenService) : IAuthClientService
 {
-    public async Task<ServiceResponse<AuthClientResult>> RegisterAsync(RegisterClientDto registerDto)
+    public async Task<ServiceResponse> RegisterAsync(RegisterClientDto registerDto)
     {
         if (await portalUserRepository.EmailExistsAsync(registerDto.Email))
-            return ServiceResponse<AuthClientResult>.ErrorResponse("Email is already in use.");
+            return ServiceResponse.ErrorResponse("Email is already in use.");
 
         var user = new PortalUser
         {
@@ -30,16 +32,7 @@ public class AuthClientService(
 
         await portalUserRepository.AddAsync(user);
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken(user);
-
-        var authResult = new AuthClientResult
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        };
-
-        return ServiceResponse<AuthClientResult>.SuccessResponse(authResult, "User registered successfully.");
+        return ServiceResponse.SuccessResponse("User registered successfully.");
     }
 
     public async Task<ServiceResponse<AuthClientResult>> LoginAsync(LoginClientDto loginDto)
@@ -49,8 +42,15 @@ public class AuthClientService(
         if (user == null || !PasswordHasher.VerifyPasswordHash(loginDto.Password, user.PasswordHash))
             return ServiceResponse<AuthClientResult>.ErrorResponse("Invalid credentials.");
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken(user);
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+
+        var accessToken = tokenService.GenerateAccessToken(tokenUserDto);
+        var refreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthClientResult
         {
@@ -72,8 +72,15 @@ public class AuthClientService(
         if (user == null)
             return ServiceResponse<AuthClientResult>.ErrorResponse("User not found.");
 
-        var newAccessToken = tokenService.GenerateAccessToken(user);
-        var newRefreshToken = tokenService.GenerateRefreshToken(user);
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+
+        var newAccessToken = tokenService.GenerateAccessToken(tokenUserDto);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthClientResult
         {

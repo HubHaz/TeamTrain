@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TeamTrain.Application.CQRS.Tenant.Commands.Auth;
+using TeamTrain.Application.CQRS.Tenants.Commands.Auth;
 using TeamTrain.Application.DTOs.Tenants.Auth;
 
 namespace TeamTrain.WebApi.Controllers.Tenant;

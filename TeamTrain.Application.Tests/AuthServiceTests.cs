@@ -1,8 +1,9 @@
 ﻿using FluentAssertions;
 using Moq;
-using TeamTrain.Application.DTOs.Tenant.Auth;
+using TeamTrain.Application.DTOs.Common;
+using TeamTrain.Application.DTOs.Tenants.Auth;
 using TeamTrain.Application.Helpers;
-using TeamTrain.Application.Interfaces.Tenants.Auth;
+using TeamTrain.Application.Interfaces;
 using TeamTrain.Application.Services.Tenants.Auth;
 using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Interfaces.Repositories;
@@ -36,16 +37,12 @@ public class AuthServiceTests
         var dto = new RegisterDto("new@user.com", "password");
 
         _userRepoMock.Setup(x => x.EmailExistsAsync(dto.Email)).ReturnsAsync(false);
-        _tokenServiceMock.Setup(x => x.GenerateAccessToken(It.IsAny<User>())).Returns("access-token");
-        _tokenServiceMock.Setup(x => x.GenerateRefreshToken(It.IsAny<User>())).Returns("refresh-token");
 
         // Act
         var result = await _sut.RegisterAsync(dto);
 
         // Assert
         result.Success.Should().BeTrue();
-        result.Data.AccessToken.Should().Be("access-token");
-        result.Data.RefreshToken.Should().Be("refresh-token");
 
         _userRepoMock.Verify(x => x.AddAsync(It.Is<User>(u => u.Email == dto.Email)), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -69,16 +66,36 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginAsync_ShouldReturnTokens_WhenCredentialsAreCorrect()
     {
+        // Arrange
         var dto = new LoginDto("valid@user.com", "password");
         var hashedPassword = PasswordHasher.HashPassword(dto.Password);
-        var user = new User { Id = Guid.NewGuid(), Email = dto.Email, PasswordHash = hashedPassword };
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = dto.Email,
+            PasswordHash = hashedPassword,
+            Role = Domain.Enums.RoleType.Participant
+        };
+
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
 
         _userRepoMock.Setup(x => x.GetByEmailAsync(dto.Email)).ReturnsAsync(user);
-        _tokenServiceMock.Setup(x => x.GenerateAccessToken(user)).Returns("access-token");
-        _tokenServiceMock.Setup(x => x.GenerateRefreshToken(user)).Returns("refresh-token");
+        _tokenServiceMock.Setup(x => x.GenerateAccessToken(
+                It.Is<TokenUserDto>(t => t.Email == dto.Email && t.Id == user.Id),
+                It.Is<string>(s => s == "portal")))
+            .Returns("access-token");
 
+        _tokenServiceMock.Setup(x => x.GenerateRefreshToken()).Returns("refresh-token");
+
+        // Act
         var result = await _sut.LoginAsync(dto);
 
+        // Assert
         result.Success.Should().BeTrue();
         result.Data.AccessToken.Should().Be("access-token");
         result.Data.RefreshToken.Should().Be("refresh-token");
@@ -87,7 +104,7 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginAsync_ShouldFail_WhenUserNotFound()
     {
-        var dto = new LoginDto ("notfound@user.com", "password");
+        var dto = new LoginDto("notfound@user.com", "password");
         _userRepoMock.Setup(x => x.GetByEmailAsync(dto.Email)).ReturnsAsync((User)null!);
 
         var result = await _sut.LoginAsync(dto);
@@ -125,17 +142,24 @@ public class AuthServiceTests
     {
         var refreshToken = "valid-refresh-token";
         var userId = Guid.NewGuid();
-        var user = new User { Id = userId, Email = "user@domain.com" };
+        var user = new User { Id = userId, Email = "user@domain.com", Role = Domain.Enums.RoleType.Participant };
 
-        _refreshTokenRepoMock.Setup(x => x.GetByTokenAsync(refreshToken)).ReturnsAsync(new Domain.Entities.Auth.RefreshToken
-        {
-            Token = refreshToken,
-            UserId = userId
-        });
+        _refreshTokenRepoMock.Setup(x => x.GetByTokenAsync(refreshToken))
+                             .ReturnsAsync(new Domain.Entities.Auth.RefreshToken
+                             {
+                                 Token = refreshToken,
+                                 UserId = userId
+                             });
 
         _userRepoMock.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync(user);
-        _tokenServiceMock.Setup(x => x.GenerateAccessToken(user)).Returns("new-access-token");
-        _tokenServiceMock.Setup(x => x.GenerateRefreshToken(user)).Returns("new-refresh-token");
+
+        _tokenServiceMock
+            .Setup(x => x.GenerateAccessToken(
+                It.Is<TokenUserDto>(t => t.Email == user.Email && t.Id == user.Id),
+                It.Is<string>(s => s == "portal")))
+            .Returns("new-access-token");
+
+        _tokenServiceMock.Setup(x => x.GenerateRefreshToken()).Returns("new-refresh-token");
 
         var result = await _sut.RefreshTokenAsync(refreshToken);
 

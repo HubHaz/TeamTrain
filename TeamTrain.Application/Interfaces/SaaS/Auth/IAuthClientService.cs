@@ -5,7 +5,7 @@ namespace TeamTrain.Application.Interfaces.SaaS.Auth;
 
 public interface IAuthClientService
 {
-    Task<ServiceResponse<AuthClientResult>> RegisterAsync(RegisterClientDto registerDto);
+    Task<ServiceResponse> RegisterAsync(RegisterClientDto registerDto);
     Task<ServiceResponse<AuthClientResult>> LoginAsync(LoginClientDto loginDto);
     Task<ServiceResponse<AuthClientResult>> RefreshTokenAsync(string refreshToken);
 }

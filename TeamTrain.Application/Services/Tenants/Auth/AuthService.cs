@@ -1,6 +1,8 @@
 ﻿using TeamTrain.Application.Common.Models;
+using TeamTrain.Application.DTOs.Common;
 using TeamTrain.Application.DTOs.Tenants.Auth;
 using TeamTrain.Application.Helpers;
+using TeamTrain.Application.Interfaces;
 using TeamTrain.Application.Interfaces.Tenants.Auth;
 using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Enums;
@@ -33,8 +35,15 @@ public class AuthService(
         await userRepository.AddAsync(user);
         await unitOfWork.SaveChangesAsync();
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken(user);
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+
+        var accessToken = tokenService.GenerateAccessToken(tokenUserDto);
+        var refreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult
         {
@@ -52,8 +61,15 @@ public class AuthService(
         if (user == null || !PasswordHasher.VerifyPasswordHash(loginDto.Password, user.PasswordHash))
             return ServiceResponse<AuthResult>.ErrorResponse("Invalid credentials.");
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken(user);
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+
+        var accessToken = tokenService.GenerateAccessToken(tokenUserDto);
+        var refreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult
         {
@@ -75,8 +91,15 @@ public class AuthService(
         if (user == null)
             return ServiceResponse<AuthResult>.ErrorResponse("User not found.");
 
-        var newAccessToken = tokenService.GenerateAccessToken(user);
-        var newRefreshToken = tokenService.GenerateRefreshToken(user);
+        var tokenUserDto = new TokenUserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+
+        var newAccessToken = tokenService.GenerateAccessToken(tokenUserDto);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult
         {

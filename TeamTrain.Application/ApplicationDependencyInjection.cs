@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TeamTrain.Application.Common.Behaviours;
+using TeamTrain.Application.Interfaces;
 using TeamTrain.Application.Interfaces.Multitenancy;
 using TeamTrain.Application.Interfaces.SaaS.Auth;
 using TeamTrain.Application.Interfaces.Tenants.Auth;
@@ -34,7 +35,7 @@ public static class ApplicationDependencyInjection
 
         services.AddScoped<ITenantProvider, TenantProvider>();
         services.AddScoped<IAuthClientService, AuthClientService>();
-        services.AddScoped<ITokenClientService, TokenClientService>();
+        services.AddScoped<ITokenService, PortalTokenService>();
         services.AddScoped<IPortalUserRepository, PortalUserRepository>();
         services.AddScoped<IRefreshTokenClientRepository, RefreshTokenClientRepository>();
 
@@ -43,7 +44,7 @@ public static class ApplicationDependencyInjection
         #region Tenant
 
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ITokenService, TenantTokenService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<ITrainingRepository, TrainingRepository>();
