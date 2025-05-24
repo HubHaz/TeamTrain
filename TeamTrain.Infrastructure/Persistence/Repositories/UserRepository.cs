@@ -2,15 +2,16 @@
 using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Enums;
 using TeamTrain.Domain.Interfaces.Repositories;
+using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TenantDbContext _context;
     private readonly DbSet<User> _users;
 
-    public UserRepository(ApplicationDbContext context)
+    public UserRepository(TenantDbContext context)
     {
         _context = context;
         _users = _context.Users;

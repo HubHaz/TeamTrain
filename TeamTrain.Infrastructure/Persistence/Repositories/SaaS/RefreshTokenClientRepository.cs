@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTrain.Domain.Entities.Auth;
-using TeamTrain.Domain.Interfaces.Repositories;
+using TeamTrain.Domain.Interfaces.Repositories.SaaS;
+using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.Infrastructure.Persistence.Repositories.SaaS;
 
-public class RefreshTokenClientRepository(TenantDbContext context) : IRefreshTokenRepository
+public class RefreshTokenClientRepository(MainDbContext context) : IRefreshTokenClientRepository
 {
     public async Task<RefreshToken> GetByTokenAsync(string token)
     {

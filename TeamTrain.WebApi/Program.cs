@@ -1,9 +1,5 @@
 ﻿using TeamTrain.Application;
 using TeamTrain.Application.Settings;
-using TeamTrain.Domain.Interfaces.Repositories;
-using TeamTrain.Domain.Interfaces.UnitOfWork;
-using TeamTrain.Infrastructure.Persistence.Repositories;
-using TeamTrain.Infrastructure.Persistence.UnitOfWork;
 using TeamTrain.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
@@ -44,22 +40,16 @@ builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddPersistenceSetup(builder.Configuration);
 builder.Services.RegisterSignalR(builder.Configuration);
-builder.Services.AddApplication();
-
-// Add services to the container.
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<ITrainingRepository, TrainingRepository>();
-builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
-
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Add services to the container.
 builder.Services.RegisterServices();
+builder.Services.AddApplication();
 
+// Add Swagger.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -121,7 +111,12 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
+#region Middlewares
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<TenantResolutionMiddleware>();
+
+#endregion
 
 app.UseAuthentication();
 app.UseAuthorization();

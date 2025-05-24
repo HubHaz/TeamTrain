@@ -1,9 +1,10 @@
 ﻿using TeamTrain.Domain.Interfaces.UnitOfWork;
 using TeamTrain.Domain.Interfaces.Repositories;
+using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.Infrastructure.Persistence.UnitOfWork;
 
-public class UnitOfWork(ApplicationDbContext context,
+public class UnitOfWork(TenantDbContext context,
                   ITrainingRepository trainings,
                   IUserRepository users,
                   IMembershipRepository memberships) : IUnitOfWork

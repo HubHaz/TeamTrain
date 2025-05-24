@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTrain.Infrastructure;
+using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.WebApi.Configurations;
 

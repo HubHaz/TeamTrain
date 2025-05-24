@@ -2,15 +2,16 @@
 using TeamTrain.Domain.Entities.Portal;
 using TeamTrain.Domain.Enums;
 using TeamTrain.Domain.Interfaces.Repositories.SaaS;
+using TeamTrain.Infrastructure.Contexts;
 
 namespace TeamTrain.Infrastructure.Persistence.Repositories.SaaS;
 
 public class PortalUserRepository : IPortalUserRepository
 {
-    private readonly TenantDbContext _context;
+    private readonly MainDbContext _context;
     private readonly DbSet<PortalUser> _users;
 
-    public PortalUserRepository(TenantDbContext context)
+    public PortalUserRepository(MainDbContext context)
     {
         _context = context;
         _users = _context.PortalUsers;

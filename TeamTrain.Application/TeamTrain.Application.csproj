@@ -20,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TeamTrain.Domain\TeamTrain.Domain.csproj" />
+    <ProjectReference Include="..\TeamTrain.Infrastructure\TeamTrain.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\Common\" />
+    <Folder Include="Interfaces\Common\" />
+    <Folder Include="Services\Common\" />
   </ItemGroup>
 
 </Project>
