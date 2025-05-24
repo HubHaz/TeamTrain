@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
-using TeamTrain.Application.DTOs.Auth;
+using TeamTrain.Application.DTOs.Tenant.Auth;
 using TeamTrain.Application.Helpers;
-using TeamTrain.Application.Interfaces.Auth;
-using TeamTrain.Application.Services.Auth;
-using TeamTrain.Domain.Entities;
+using TeamTrain.Application.Interfaces.Tenant.Auth;
+using TeamTrain.Application.Services.Tenant.Auth;
+using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Interfaces.Repositories;
 using TeamTrain.Domain.Interfaces.UnitOfWork;
 

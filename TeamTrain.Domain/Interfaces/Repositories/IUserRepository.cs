@@ -1,4 +1,4 @@
-﻿using TeamTrain.Domain.Entities;
+﻿using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Enums;
 
 namespace TeamTrain.Domain.Interfaces.Repositories;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamTrain.Domain.Entities;
+using TeamTrain.Domain.Entities.App;
 using TeamTrain.Domain.Enums;
 using TeamTrain.Domain.Interfaces.Repositories;
 

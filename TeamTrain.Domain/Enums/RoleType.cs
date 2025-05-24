@@ -1,5 +1,10 @@
-﻿
-namespace TeamTrain.Domain.Enums;
+﻿namespace TeamTrain.Domain.Enums;
+
+public enum PortalRoleType
+{
+    Administrator,
+    Customer
+}
 
 public enum RoleType
 {

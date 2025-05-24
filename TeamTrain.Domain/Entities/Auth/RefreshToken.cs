@@ -1,4 +1,5 @@
-﻿using TeamTrain.Domain.Interfaces;
+﻿using TeamTrain.Domain.Entities.App;
+using TeamTrain.Domain.Interfaces;
 
 namespace TeamTrain.Domain.Entities.Auth;
 

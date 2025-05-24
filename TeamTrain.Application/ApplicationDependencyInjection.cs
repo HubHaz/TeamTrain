@@ -3,8 +3,9 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TeamTrain.Application.Common.Behaviours;
-using TeamTrain.Application.Interfaces.Auth;
-using TeamTrain.Application.Services.Auth;
+using TeamTrain.Application.Interfaces.Tenant.Auth;
+using TeamTrain.Application.Services;
+using TeamTrain.Application.Services.Tenant.Auth;
 
 namespace TeamTrain.Application;
 

@@ -1,0 +1,22 @@
+﻿using TeamTrain.Domain.Enums;
+using TeamTrain.Domain.Interfaces;
+
+namespace TeamTrain.Domain.Entities.App;
+
+public class User : IEntity<Guid>
+{
+    public Guid Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+
+    public string Email { get; set; }
+    public string PasswordHash { get; set; }
+
+    public RoleType Role { get; set; }
+
+    public ICollection<Membership> Memberships { get; set; }
+    public ICollection<UserTrainingSignup> Signups { get; set; }
+}

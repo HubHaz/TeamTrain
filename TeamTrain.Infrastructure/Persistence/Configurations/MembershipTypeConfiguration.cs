@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TeamTrain.Domain.Entities;
+using TeamTrain.Domain.Entities.App;
 
 namespace TeamTrain.Infrastructure.Persistence.Configurations;
 
